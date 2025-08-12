@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock, MapPin, Users, ArrowRight } from "lucide-react";
+import CountdownTimer from "@/components/ui/countdown-timer";
 
 const EventsSection = () => {
   const upcomingEvents = [
@@ -64,6 +65,15 @@ const EventsSection = () => {
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Don't miss out on our exciting events designed to inspire, educate, and connect our community.
           </p>
+          
+          {/* Countdown Timer for Next Event */}
+          <div className="mt-8 flex justify-center">
+            <CountdownTimer 
+              targetDate="2025-02-15T18:00:00"
+              eventName="Annual Tech Conference 2024"
+              className="bg-card border rounded-lg p-4 shadow-sm"
+            />
+          </div>
         </div>
 
         {/* Events Grid */}

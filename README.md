@@ -1,73 +1,122 @@
-# Welcome to your Lovable project
+# Apex Techno Warriors 
 
-## Project info
+A full-stack-ready React + Vite + TypeScript website styled with Tailwind CSS. This project is designed for a **college society or organization** and includes multiple pages, routing, and a premium dark theme with glassmorphism.
 
-**URL**: https://lovable.dev/projects/864a21c7-0ecb-4de8-9cee-d35e9cb499d2
+---
 
-## How can I edit this code?
+## Features
 
-There are several ways of editing your application.
+* Multi-page setup:
 
-**Use Lovable**
+  * Home
+  * Events
+  * Gallery
+  * Contact
+  * Sign In / Sign Up (premium UI with glassmorphism)
+  * 404 Not Found page
+* Responsive design for mobile, tablet, and desktop
+* Global theming with `next-themes`
+* Tooltips, toast notifications, and loading states
+* Query management with React Query
+* Social login buttons (Google & GitHub)
+* Easy to extend and customize
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/864a21c7-0ecb-4de8-9cee-d35e9cb499d2) and start prompting.
+---
 
-Changes made via Lovable will be committed automatically to this repo.
+## Tech Stack
 
-**Use your preferred IDE**
+* React + TypeScript
+* Vite
+* Tailwind CSS
+* React Router DOM
+* React Query (`@tanstack/react-query`)
+* next-themes (dark/light/system theme switcher)
+* react-icons
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+---
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## Prerequisites
 
-Follow these steps:
+* Node.js (LTS recommended)
+* npm (or yarn / pnpm)
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+---
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## Quick Start
 
-# Step 3: Install the necessary dependencies.
-npm i
+1. Install dependencies:
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+```bash
+npm install
+```
+
+2. Start the development server:
+
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+3. Open the browser at `http://localhost:5173`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+---
 
-**Use GitHub Codespaces**
+## Project Structure
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```
+src/
+  components/     # UI components (toaster, tooltip, navbar, etc.)
+  pages/          # Each page (Index, Events, Gallery, Contact, SignIn, NotFound)
+  App.tsx         # Routes configuration
+  main.tsx        # App entry point
+```
 
-## What technologies are used for this project?
+---
 
-This project is built with:
+## Routes Setup (`App.tsx`)
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+```tsx
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Index from "./pages/Index";
+import Events from "./pages/Events";
+import Gallery from "./pages/Gallery";
+import Contact from "./pages/Contact";
+import SignIn from "./pages/SignIn";
+import NotFound from "./pages/NotFound";
 
-## How can I deploy this project?
+<BrowserRouter>
+  <Routes>
+    <Route path="/" element={<Index />} />
+    <Route path="/events" element={<Events />} />
+    <Route path="/gallery" element={<Gallery />} />
+    <Route path="/contact" element={<Contact />} />
+    <Route path="/sign-in" element={<SignIn />} />
+    <Route path="*" element={<NotFound />} />
+  </Routes>
+</BrowserRouter>
+```
 
-Simply open [Lovable](https://lovable.dev/projects/864a21c7-0ecb-4de8-9cee-d35e9cb499d2) and click on Share -> Publish.
+---
 
-## Can I connect a custom domain to my Lovable project?
+## Tailwind Notes
 
-Yes, you can!
+* Tailwind is configured in `tailwind.config.ts`
+* `backdrop-blur` and transparent backgrounds are used for glassmorphism
+* Theme colors can be changed in `tailwind.config.ts`
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+---
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+## Deployment
+
+1. Build the project:
+
+```bash
+npm run build
+```
+
+2. Deploy the `dist/` folder to any static hosting (Netlify, Vercel, GitHub Pages)
+
+---
+
+## License
+
+Free to use and modify for personal or educational purposes.

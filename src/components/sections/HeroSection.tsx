@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play, Users, Calendar, Trophy } from "lucide-react";
 import heroImage from "@/assets/hero-image.jpg";
-
+import {Link} from "react-router-dom" ;
 const HeroSection = () => {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
@@ -39,10 +39,12 @@ const HeroSection = () => {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button size="lg" className="hero-gradient shadow-glow hover:scale-105 transition-bounce group">
+            <Link to = "/join-us">
+              <Button size="lg" className="hero-gradient shadow-glow hover:scale-105 transition-bounce group">
               Join Our Society
               <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-smooth" />
             </Button>
+            </Link>
             <Button variant="outline" size="lg" className="group">
               <Play className="mr-2 h-5 w-5 group-hover:scale-110 transition-bounce" />
               Watch Our Story

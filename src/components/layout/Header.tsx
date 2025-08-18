@@ -47,7 +47,7 @@ const Header = () => {
                 Sign In
               </Button>
             </Link>
-            <Link to = "/joinus"> 
+            <Link to = "/join-us"> 
               <Button size="sm" className="hero-gradient shadow-glow">
                 Join Us
               </Button>
@@ -90,7 +90,7 @@ const Header = () => {
                     Sign In
                   </Button>
                 </Link>
-                <Link to = "/joinus"> 
+                <Link to = "/join-team"> 
                   <Button size="sm" className="hero-gradient shadow-glow">
                     Join Us
                   </Button>

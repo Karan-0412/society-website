@@ -25,34 +25,71 @@ const CyberSignup = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  if (formData.password !== formData.confirmPassword) {
+    toast({
+      title: "Access Denied",
+      description: "Neural patterns do not match",
+      variant: "destructive"
+    });
+    return;
+  }
+
+  if (!acceptTerms) return;
+
+  setIsLoading(true);
+
+  try {
+    const res = await fetch("http://localhost:5000/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        username: formData.username,
+        email: formData.email,
+        password: formData.password
+      })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      toast({
+        title: "Neural Profile Created",
+        description: "You can now log in..."
+      });
+      // Optionally redirect to login
+    } else {
       toast({
         title: "Access Denied",
-        description: "Neural patterns do not match",
+        description: data.message || "Sign-up failed",
         variant: "destructive"
       });
-      return;
     }
-    
-    setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
+  } catch (err) {
     toast({
-      title: "Neural Profile Created",
-      description: "Welcome to the cyber realm...",
+      title: "Error",
+      description: "Server unreachable",
+      variant: "destructive"
     });
-    
-    setIsLoading(false);
-  };
+  }
 
-  const handleSocialLogin = (provider: string) => {
-    toast({
-      title: "Social Neural Link",
-      description: `Connecting to ${provider} mainframe...`,
-    });
-  };
+  setIsLoading(false);
+};
+
+const handleSocialLogin = (provider: 'Google' | 'GitHub') => {
+  toast({
+    title: "Social Neural Link",
+    description: `Connecting to ${provider} mainframe...`,
+  });
+
+  if (provider === 'Google') {
+    window.location.href = "http://localhost:5000/api/auth/google";
+  } else if (provider === 'GitHub') {
+    window.location.href = "http://localhost:5000/api/auth/github";
+  }
+};
 
   return (
     <div className="light-auth-theme dark:auth-theme min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden">

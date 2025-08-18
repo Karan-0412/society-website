@@ -16,27 +16,48 @@ const CyberLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setIsLoading(true);
 
-    // Simulate login process
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    toast({
-      title: "Access Granted",
-      description: "Welcome to the cyber realm...",
+  try {
+    // Connect to backend login route
+    const res = await fetch("http://localhost:5000/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
     });
-    
-    setIsLoading(false);
-  };
 
-  const handleSocialLogin = (provider: string) => {
-    toast({
-      title: "Social Neural Link",
-      description: `Connecting to ${provider} mainframe...`,
-    });
-  };
+    const data = await res.json();
+
+    if (res.ok && data.token) {
+      localStorage.setItem("token", data.token); // save JWT
+      toast({ title: "Access Granted", description: "Welcome to the cyber realm..." });
+      // Optionally redirect to dashboard here
+    } else {
+      toast({ title: "Access Denied", description: data.message || "Login failed" });
+    }
+  } catch (err) {
+    toast({ title: "Error", description: "Server unreachable" });
+  }
+
+  setIsLoading(false);
+};
+
+
+const handleSocialLogin = (provider: 'Google' | 'GitHub') => {
+  toast({
+    title: "Social Neural Link",
+    description: `Connecting to ${provider} mainframe...`,
+  });
+
+  if (provider === 'Google') {
+    window.location.href = "http://localhost:5000/api/auth/google";
+  } else if (provider === 'GitHub') {
+    window.location.href = "http://localhost:5000/api/auth/github";
+  }
+};
+
 
   return (
     <div className="light-auth-theme dark:auth-theme min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden">
@@ -188,10 +209,12 @@ const CyberLogin = () => {
 
             {/* Additional Options */}
             <div className="space-y-3">
-              <button className="w-full text-sm text-primary hover:text-primary/80 transition-colors duration-200 flex items-center justify-center gap-2">
-                <Zap className="w-3 h-3" />
-                Recover access credentials
+              <Link to = "/forgot-password">
+                <button className="w-full text-sm text-primary hover:text-primary/80 transition-colors duration-200 flex items-center justify-center gap-2">
+                    <Zap className="w-3 h-3" />
+                    Recover access credentials
               </button>
+              </Link>
               <div className="text-center">
                 <p className="text-sm text-muted-foreground">
                   Need a neural profile?{" "}

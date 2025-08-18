@@ -23,6 +23,7 @@ const Contact = () => {
               Have questions or want to get involved? We'd love to hear from you.
             </p>
           </div>
+          
         </section>
 
         <section className="py-12">

@@ -12,7 +12,10 @@ import NotFound from "./pages/NotFound";
 import Login from "./pages/Login" ;
 import Signup from "./pages/Signup" ;
 import SignIndex from "./pages/Signin/SignIndex" ;
-
+import TeamIndex from "./pages/TeamIndex" ;
+import JoinTeam from "./pages/JoinTeam";
+import PForgotPassword from "./pages/forgotPassword.tsx" ;
+import ResetPassword from "./pages/resetPassword.tsx" ;
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -35,6 +38,10 @@ const App = () => (
             <Route path="/events" element={<Events />} />
             <Route path="/gallery" element={<Gallery />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/team" element={<TeamIndex />} />
+            <Route path="/join-us" element={<JoinTeam />} />
+            <Route path="/forgot-password" element={<PForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

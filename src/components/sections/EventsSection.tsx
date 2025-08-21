@@ -3,8 +3,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock, MapPin, Users, ArrowRight } from "lucide-react";
 import CountdownTimer from "@/components/ui/countdown-timer";
+import { useNavigate } from "react-router-dom";
+
 
 const EventsSection = () => {
+
+  const navigate=useNavigate();
+
   const upcomingEvents = [
     {
       id: 1,
@@ -78,42 +83,44 @@ const EventsSection = () => {
 
         {/* Events Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {upcomingEvents.map((event) => (
-            <Card key={event.id} className="group hover:shadow-lg transition-smooth border-border/50 hover:border-primary/20">
+          {upcomingEvents.map((evt) => (
+            <Card key={evt.id} className="group hover:shadow-lg transition-smooth border-border/50 hover:border-primary/20">
               <CardHeader>
                 <div className="flex items-start justify-between">
-                  <Badge className={`${getStatusColor(event.status)} font-medium`}>
-                    {event.status}
+                  <Badge className={`${getStatusColor(evt.status)} font-medium`}>
+                    {evt.status}
                   </Badge>
-                  <Badge variant="outline">{event.category}</Badge>
+                  <Badge variant="outline">{evt.category}</Badge>
                 </div>
                 <CardTitle className="group-hover:text-primary transition-smooth">
-                  {event.title}
+                  {evt.title}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-muted-foreground text-sm">{event.description}</p>
+                <p className="text-muted-foreground text-sm">{evt.description}</p>
                 
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center space-x-2 text-muted-foreground">
                     <Calendar className="h-4 w-4" />
-                    <span>{event.date}</span>
+                    <span>{evt.date}</span>
                   </div>
                   <div className="flex items-center space-x-2 text-muted-foreground">
                     <Clock className="h-4 w-4" />
-                    <span>{event.time}</span>
+                    <span>{evt.time}</span>
                   </div>
                   <div className="flex items-center space-x-2 text-muted-foreground">
                     <MapPin className="h-4 w-4" />
-                    <span>{event.location}</span>
+                    <span>{evt.location}</span>
                   </div>
                   <div className="flex items-center space-x-2 text-muted-foreground">
                     <Users className="h-4 w-4" />
-                    <span>{event.attendees} registered</span>
+                    <span>{evt.attendees} registered</span>
                   </div>
                 </div>
 
-                <Button className="w-full group" variant="outline">
+                <Button
+                 onClick={()=> navigate(`register/${evt.title}`)}
+                 className="w-full group" variant="outline">
                   Register Now
                   <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-smooth" />
                 </Button>

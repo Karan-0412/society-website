@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import {  } from "lucide-react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios"
 
@@ -19,7 +19,7 @@ const Registeration = () => {
     const [leaderUID,setLeaderUID] = useState("");
     const [participants, setParticipants] = useState(1);
     const [members, setMembers] = useState([]);
-
+    const navigate=useNavigate()
     useEffect(() => {
     setMembers(Array.from({ length: participants }, () => ({ name: "", uid: "" })));
     }, [participants]);
@@ -35,12 +35,19 @@ const Registeration = () => {
 
     const register = async() =>{
         try {
-            // const res = await axios.post(`/register/${slug}/`, data)
-            // if(!res) {
-            //     console.log("ERROR while storing the registeration");
-            // }
-            // console.log("SUCCESS");
-            console.log(data)
+            const res = await axios.post(`/register/${slug}/`, data)
+            if(!res) {
+                console.log("ERROR while storing the registeration");
+            }
+            else{
+              console.log("SUCCESS");
+              setTeamName("");
+              setLeaderName("");
+              setLeaderUID("");
+              setParticipants(1);
+              setMembers([]);
+            }
+            
 
         } catch (error) {
             console.log("ERROR While storing the registeration");
@@ -93,7 +100,7 @@ const Registeration = () => {
                     </div>
                     </div>
                     <div className="space-x-5 space-y-2">
-                    <Label htmlFor="participants">Number of Participants: </Label>
+                    <Label htmlFor="participants">Number of Members: </Label>
                         <select id="participants" name="participants" className="px-4 py-2 rounded-lg" onChange={(e)=> setParticipants(Number(e.currentTarget.value))}>
                             <option value="1">1</option>
                             <option value="2">2</option>
@@ -121,8 +128,8 @@ const Registeration = () => {
                     <Button className="w-full hero-gradient shadow-glow group" onClick={register}>
                         Register
                     </Button>
-                    <Button className="w-full hero-gradient shadow-glow group" onClick={()=>{}}>
-                        QUESTIONS ?
+                    <Button className="w-full hero-gradient shadow-glow group" onClick={()=>navigate("/faq")}>
+                        Having Doubts ?
                     </Button>
                   </div>
                 </CardContent>

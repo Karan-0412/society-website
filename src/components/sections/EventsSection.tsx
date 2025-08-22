@@ -131,7 +131,9 @@ const EventsSection = () => {
 
         {/* View All Button */}
         <div className="text-center">
-          <Button size="lg" variant="outline" className="group">
+          <Button
+          onClick={()=>navigate("/events")}
+           size="lg" variant="outline" className="group">
             View All Events
             <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-smooth" />
           </Button>

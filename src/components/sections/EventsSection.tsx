@@ -119,7 +119,7 @@ const EventsSection = () => {
                 </div>
 
                 <Button
-                 onClick={()=> navigate(`register/${evt.title}`)}
+                 onClick={()=> navigate(`/register/${evt.title}`)}
                  className="w-full group" variant="outline">
                   Register Now
                   <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-smooth" />

@@ -2,7 +2,7 @@
 import express from 'express';
 import bcryptjs from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import pool, { sql } from '../connection/db.js';
+import pool, { sql } from '../../connection/db.js';
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { Strategy as GitHubStrategy } from 'passport-github2';
@@ -10,17 +10,21 @@ import { Strategy as GitHubStrategy } from 'passport-github2';
 const router = express.Router();
 
 /* ------------------------ Passport Strategies ------------------------ */
-passport.use(new GoogleStrategy({
-  clientID: process.env.GOOGLE_CLIENT_ID,
-  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: "/api/auth/google/callback"
-}, (accessToken, refreshToken, profile, done) => done(null, profile)));
+if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+  passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: "/api/auth/google/callback"
+  }, (accessToken, refreshToken, profile, done) => done(null, profile)));
+}
 
-passport.use(new GitHubStrategy({
-  clientID: process.env.GITHUB_CLIENT_ID,
-  clientSecret: process.env.GITHUB_CLIENT_SECRET,
-  callbackURL: "/api/auth/github/callback"
-}, (accessToken, refreshToken, profile, done) => done(null, profile)));
+if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
+  passport.use(new GitHubStrategy({
+    clientID: process.env.GITHUB_CLIENT_ID,
+    clientSecret: process.env.GITHUB_CLIENT_SECRET,
+    callbackURL: "/api/auth/github/callback"
+  }, (accessToken, refreshToken, profile, done) => done(null, profile)));
+}
 
 /* ------------------------ Email/Password Routes ------------------------ */
 
@@ -32,9 +36,6 @@ router.post('/register', async (req, res) => {
   }
 
   try {
-    // 🔍 Added console.log to confirm the request body is being received
-    console.log('Attempting to register user:', { username, email });
-
     const existing = await pool.request()
       .input('username', sql.VarChar, username)
       .input('email', sql.VarChar, email)
@@ -52,8 +53,6 @@ router.post('/register', async (req, res) => {
       .input('password', sql.VarChar, hashedPassword)
       .query('INSERT INTO users (username, email, password) VALUES (@username, @email, @password)');
 
-    // 🔍 Added console.log to confirm successful database insertion
-    console.log('User registered successfully:', username);
     res.status(201).json({ message: 'User registered successfully' });
   } catch (err) {
     console.error('Registration error:', err);
@@ -77,20 +76,39 @@ router.post('/login', async (req, res) => {
     const isMatch = await bcryptjs.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ message: 'Incorrect password' });
 
-    // ✅ Fix: Added username to the JWT payload
-    const token = jwt.sign({ id: user.id, email: user.email, username: user.username }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    res.json({ token, message: 'Login successful' });
+    // ✅ Check if user is in core_team
+    const coreCheck = await pool.request()
+      .input('user_id', sql.Int, user.id)
+      .query('SELECT 1 FROM core_team WHERE user_id=@user_id');
+
+    const role = coreCheck.recordset.length ? "core_team" : "member";
+
+    const token = jwt.sign(
+      { id: user.id, email: user.email, username: user.username, role },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    res.json({ token, role, message: 'Login successful' });
   } catch (err) {
     console.error('Login error:', err);
     res.status(500).json({ message: 'Server error' });
   }
 });
 
+/* ------------------------ Password Reset Routes ------------------------ */
+// Removed here to avoid duplicate/missing dependencies.
+// Password reset endpoints are handled in `src/routes/reset-password.js`.
+
 /* ------------------------ Google OAuth Routes ------------------------ */
-router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+  router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+}
 
 /* ------------------------ GitHub OAuth Routes ------------------------ */
-router.get('/github', passport.authenticate('github', { scope: ['user:email'] }));
+if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
+  router.get('/github', passport.authenticate('github', { scope: ['user:email'] }));
+}
 
 /* ------------------------ OAuth Callback Helper ------------------------ */
 const handleOAuthCallback = async (req, res, user) => {
@@ -114,22 +132,45 @@ const handleOAuthCallback = async (req, res, user) => {
         .query('SELECT * FROM users WHERE email=@email');
     }
 
-    const token = jwt.sign({ id: existingUser.recordset[0].id, email: existingUser.recordset[0].email, username: existingUser.recordset[0].username }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const userRecord = existingUser.recordset[0];
+
+    // ✅ Check if OAuth user is in core_team
+    const coreCheck = await pool.request()
+      .input('user_id', sql.Int, userRecord.id)
+      .query('SELECT 1 FROM core_team WHERE user_id=@user_id');
+
+    const role = coreCheck.recordset.length ? "core_team" : "member";
+
+    const token = jwt.sign(
+      { id: userRecord.id, email: userRecord.email, username: userRecord.username, role },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
     
-    // ✅ Fix: Redirecting to a dashboard route, which is more logical after login.
-    res.redirect(`http://localhost:8080/dashboard?token=${token}`);
+    // ✅ Redirect to correct frontend page based on role
+    if (role === "core_team") {
+      res.redirect(`http://localhost:8080/core?token=${token}`);
+    } else {
+      res.redirect(`http://localhost:8080/dashboard?token=${token}`);
+    }
   } catch (err) {
     console.error('OAuth callback error:', err);
     res.redirect('/login');
   }
 };
 
-router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/login', session: false }),
-  (req, res) => handleOAuthCallback(req, res, req.user)
-);
+if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+  router.get('/google/callback',
+    passport.authenticate('google', { failureRedirect: '/login', session: false }),
+    (req, res) => handleOAuthCallback(req, res, req.user)
+  );
+}
 
-router.get('/github/callback', passport.authenticate('github', { failureRedirect: '/login', session: false }),
-  (req, res) => handleOAuthCallback(req, res, req.user)
-);
+if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
+  router.get('/github/callback',
+    passport.authenticate('github', { failureRedirect: '/login', session: false }),
+    (req, res) => handleOAuthCallback(req, res, req.user)
+  );
+}
 
 export default router;

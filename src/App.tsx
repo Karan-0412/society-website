@@ -15,7 +15,12 @@ import SignIndex from "./pages/Signin/SignIndex" ;
 import TeamIndex from "./pages/TeamIndex" ;
 import JoinTeam from "./pages/JoinTeam";
 import PForgotPassword from "./pages/forgotPassword.tsx" ;
-import ResetPassword from "./pages/resetPassword.tsx" ;
+import ResetPassword from "./pages/resetPassword" ;
+import CoreIndex  from "./pages/CoreIndex.tsx";
+import AttendanceEventsPage from "./pages/AttendanceEventsPage";
+import AttendanceMarkingPage from "./pages/AttendanceMarkingPage";
+import ProtectedRoute from "./components/ProtectedRoute";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -42,7 +47,23 @@ const App = () => (
             <Route path="/join-us" element={<JoinTeam />} />
             <Route path="/forgot-password" element={<PForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/core-dashboard" element={
+              <ProtectedRoute>
+                <CoreIndex />
+              </ProtectedRoute>
+            } />
+            <Route path="/core-dashboard/attendance" element={
+              <ProtectedRoute>
+                <AttendanceEventsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/core-dashboard/attendance/:eventId" element={
+              <ProtectedRoute>
+                <AttendanceMarkingPage />
+              </ProtectedRoute>
+            } />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

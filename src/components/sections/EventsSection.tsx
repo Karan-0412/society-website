@@ -1,58 +1,65 @@
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock, MapPin, Users, ArrowRight } from "lucide-react";
 import CountdownTimer from "@/components/ui/countdown-timer";
 
+interface EventItem {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  time: string;
+  location: string;
+  attendees?: number;
+  category: string;
+  status: "upcoming" | "ongoing" | "completed" | "cancelled" | string;
+}
+
+const API_BASE = (import.meta as any).env?.VITE_CORE_API || "http://localhost:5050";
+
 const EventsSection = () => {
-  const upcomingEvents = [
-    {
-      id: 1,
-      title: "Annual Tech Conference 2024",
-      date: "March 15, 2024",
-      time: "9:00 AM - 5:00 PM",
-      location: "Main Auditorium",
-      attendees: 120,
-      category: "Conference",
-      status: "Open",
-      description: "Join us for a day of inspiring talks, networking, and innovation in technology."
-    },
-    {
-      id: 2,
-      title: "Community Hackathon",
-      date: "March 22, 2024",
-      time: "6:00 PM - 11:59 PM",
-      location: "Computer Lab B",
-      attendees: 48,
-      category: "Competition",
-      status: "Limited",
-      description: "24-hour coding challenge to solve real-world problems and win amazing prizes."
-    },
-    {
-      id: 3,
-      title: "Leadership Workshop",
-      date: "March 28, 2024",
-      time: "2:00 PM - 4:00 PM",
-      location: "Meeting Room 301",
-      attendees: 25,
-      category: "Workshop",
-      status: "Open",
-      description: "Develop essential leadership skills for personal and professional growth."
-    }
-  ];
+  const [events, setEvents] = useState<EventItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let timer: number | undefined;
+    const fetchEvents = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/events`);
+        const data = await res.json();
+        setEvents(data);
+      } catch (e) {
+        console.error("Failed to load events", e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchEvents();
+    timer = window.setInterval(fetchEvents, 30000);
+    return () => {
+      if (timer) window.clearInterval(timer);
+    };
+  }, []);
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "Open":
+      case "upcoming":
         return "bg-success/10 text-success border-success/20";
-      case "Limited":
+      case "ongoing":
         return "bg-warning/10 text-warning border-warning/20";
-      case "Full":
+      case "completed":
+        return "bg-muted/10 text-muted-foreground border-muted/20";
+      case "cancelled":
         return "bg-destructive/10 text-destructive border-destructive/20";
       default:
         return "bg-muted/10 text-muted-foreground border-muted/20";
     }
   };
+
+  const topEvents = events.slice(0, 3);
+  const nextEvent = events.find(e => e.status === "upcoming" || e.status === "ongoing");
 
   return (
     <section className="py-20 bg-secondary/30">
@@ -68,17 +75,30 @@ const EventsSection = () => {
           
           {/* Countdown Timer for Next Event */}
           <div className="mt-8 flex justify-center">
-            <CountdownTimer 
-              targetDate="2025-02-15T18:00:00"
-              eventName="Annual Tech Conference 2024"
-              className="bg-card border rounded-lg p-4 shadow-sm"
-            />
+            {nextEvent ? (
+              <CountdownTimer 
+                targetDate={new Date(nextEvent.date + (nextEvent.time ? `T${nextEvent.time}` : "T00:00")).toISOString()}
+                eventName={nextEvent.title}
+                className="bg-card border rounded-lg p-4 shadow-sm"
+              />
+            ) : (
+              <div className="text-sm text-muted-foreground">No upcoming events scheduled.</div>
+            )}
           </div>
         </div>
 
         {/* Events Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {upcomingEvents.map((event) => (
+          {loading && [1,2,3].map(i => (
+            <Card key={i} className="border-border/50">
+              <CardContent className="p-6 animate-pulse space-y-3">
+                <div className="h-5 w-2/3 bg-muted rounded" />
+                <div className="h-4 w-full bg-muted rounded" />
+                <div className="h-4 w-1/2 bg-muted rounded" />
+              </CardContent>
+            </Card>
+          ))}
+          {!loading && topEvents.map((event) => (
             <Card key={event.id} className="group hover:shadow-lg transition-smooth border-border/50 hover:border-primary/20">
               <CardHeader>
                 <div className="flex items-start justify-between">
@@ -97,24 +117,28 @@ const EventsSection = () => {
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center space-x-2 text-muted-foreground">
                     <Calendar className="h-4 w-4" />
-                    <span>{event.date}</span>
+                    <span>{new Date(event.date).toLocaleDateString()}</span>
                   </div>
-                  <div className="flex items-center space-x-2 text-muted-foreground">
-                    <Clock className="h-4 w-4" />
-                    <span>{event.time}</span>
-                  </div>
+                  {event.time && (
+                    <div className="flex items-center space-x-2 text-muted-foreground">
+                      <Clock className="h-4 w-4" />
+                      <span>{event.time}</span>
+                    </div>
+                  )}
                   <div className="flex items-center space-x-2 text-muted-foreground">
                     <MapPin className="h-4 w-4" />
                     <span>{event.location}</span>
                   </div>
-                  <div className="flex items-center space-x-2 text-muted-foreground">
-                    <Users className="h-4 w-4" />
-                    <span>{event.attendees} registered</span>
-                  </div>
+                  {typeof event.attendees === "number" && (
+                    <div className="flex items-center space-x-2 text-muted-foreground">
+                      <Users className="h-4 w-4" />
+                      <span>{event.attendees} registered</span>
+                    </div>
+                  )}
                 </div>
 
                 <Button className="w-full group" variant="outline">
-                  Register Now
+                  Learn More
                   <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-smooth" />
                 </Button>
               </CardContent>
@@ -124,9 +148,11 @@ const EventsSection = () => {
 
         {/* View All Button */}
         <div className="text-center">
-          <Button size="lg" variant="outline" className="group">
-            View All Events
-            <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-smooth" />
+          <Button size="lg" variant="outline" className="group" asChild>
+            <a href="/events">
+              View All Events
+              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-smooth" />
+            </a>
           </Button>
         </div>
       </div>

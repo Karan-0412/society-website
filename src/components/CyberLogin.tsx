@@ -6,7 +6,9 @@ import { Checkbox } from "@/components/Signui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/Signui/card";
 import { Eye, EyeOff, Shield, Zap, Lock, Github } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+
+const API_BASE = (import.meta as any).env?.VITE_CORE_API || "http://localhost:5050";
 
 const CyberLogin = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -15,34 +17,60 @@ const CyberLogin = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
 const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
   setIsLoading(true);
 
   try {
-    // Connect to backend login route
+    // Try core-dashboard auth first
+    const coreRes = await fetch(`${API_BASE}/api/core-auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ idOrEmail: email, password }),
+    });
+
+    if (coreRes.ok) {
+      const data = await coreRes.json();
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("role", data.role);
+      toast({ title: "Access Granted", description: "Welcome to Core Dashboard" });
+      navigate("/core-dashboard");
+      return;
+    }
+
+    // Fallback to existing public auth if present
     const res = await fetch("http://localhost:5000/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({ email, password }),
     });
 
     const data = await res.json();
 
     if (res.ok && data.token) {
-      localStorage.setItem("token", data.token); // save JWT
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("role", data.role); // optional
+
       toast({ title: "Access Granted", description: "Welcome to the cyber realm..." });
-      // Optionally redirect to dashboard here
+
+      if (data.role === "core_team") {
+        navigate("/core-dashboard");
+      } else {
+        navigate("/");
+      }
     } else {
       toast({ title: "Access Denied", description: data.message || "Login failed" });
     }
   } catch (err) {
+    console.error("Login error:", err);
     toast({ title: "Error", description: "Server unreachable" });
+  } finally {
+    setIsLoading(false);
   }
-
-  setIsLoading(false);
 };
+
 
 
 const handleSocialLogin = (provider: 'Google' | 'GitHub') => {
@@ -140,7 +168,7 @@ const handleSocialLogin = (provider: 'Google' | 'GitHub') => {
                     placeholder="Enter email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="bg-muted/50 border-border/50 focus:border-primary focus:ring-primary/20 focus:shadow-glow-primary transition-all duration-300 pl-4"
+                    className="bg-muted/50 focus:border-primary focus:ring-primary/20 focus:shadow-glow-primary transition-all duration-300 pl-4"
                     required
                   />
                   <div className="absolute inset-0 rounded-md bg-gradient-primary opacity-0 hover:opacity-10 transition-opacity duration-300 pointer-events-none"></div>

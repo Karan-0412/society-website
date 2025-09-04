@@ -1,192 +1,92 @@
-import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, EyeOff, Shield, CheckCircle } from "lucide-react";
-import { Link } from "react-router-dom";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const ResetPassword = () => {
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isReset, setIsReset] = useState(false);
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const { toast } = useToast();
+
+  const token = useMemo(() => searchParams.get("token") || "", [searchParams]);
+  const email = useMemo(() => searchParams.get("email") || "", [searchParams]);
+
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!token || !email) {
+      toast({ title: "Invalid link", description: "Missing token or email." });
+    }
+  }, [token, email, toast]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (newPassword !== confirmPassword) {
-      toast({
-        title: "Password Mismatch",
-        description: "The passwords do not match. Please try again.",
-        variant: "destructive",
-      });
+    if (!token || !email) return;
+    if (password.length < 8) {
+      toast({ title: "Weak password", description: "Minimum 8 characters." });
+      return;
+    }
+    if (password !== confirmPassword) {
+      toast({ title: "Mismatch", description: "Passwords do not match." });
       return;
     }
 
-    if (newPassword.length < 8) {
-      toast({
-        title: "Password Too Short",
-        description: "Password must be at least 8 characters long.",
-        variant: "destructive",
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/api/auth/reset-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, token, newPassword: password }),
       });
-      return;
+      const data = await res.json();
+      if (res.ok) {
+        toast({ title: "Password updated", description: data.message || "Login with your new password." });
+        navigate("/login", { replace: true });
+      } else {
+        toast({ title: "Error", description: data.message || "Reset failed." });
+      }
+    } catch (_e) {
+      toast({ title: "Network error", description: "Unable to reach the server." });
+    } finally {
+      setLoading(false);
     }
-
-    setIsLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      setIsReset(true);
-      toast({
-        title: "Password Reset Successful",
-        description: "Your neural pathways have been secured with new authentication.",
-      });
-    }, 2000);
   };
 
-  if (isReset) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background/90 to-primary/10 p-4">
-        <Card className="w-full max-w-md bg-background/80 backdrop-blur-sm border-primary/20 shadow-2xl shadow-primary/10">
-          <CardHeader className="text-center space-y-4">
-            <div className="mx-auto w-16 h-16 bg-gradient-to-br from-primary to-primary/60 rounded-full flex items-center justify-center shadow-lg shadow-primary/30">
-              <CheckCircle className="w-8 h-8 text-primary-foreground" />
-            </div>
-            <div>
-              <CardTitle className="text-2xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
-                Password Reset Complete
-              </CardTitle>
-              <CardDescription className="text-muted-foreground mt-2">
-                Your neural security protocols have been successfully updated
-              </CardDescription>
-            </div>
-          </CardHeader>
-          
-          <CardContent className="space-y-4">
-            <div className="text-center p-4 bg-primary/5 rounded-lg border border-primary/10">
-              <p className="text-sm text-muted-foreground">
-                Your new authentication sequence is now active. You can access the neural network with your updated credentials.
-              </p>
-            </div>
-          </CardContent>
-          
-          <CardFooter>
-            <Button asChild className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/20 transition-all duration-300">
-              <Link to="/login">
-                Access Neural Network
-              </Link>
-            </Button>
-          </CardFooter>
-        </Card>
-      </div>
-    );
-  }
-
   return (
-    <div className="light-auth-theme dark:auth-theme min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background/90 to-primary/10 p-4">
-      <Card className="w-full max-w-md bg-background/80 backdrop-blur-sm border-primary/20 shadow-2xl shadow-primary/10">
-        <CardHeader className="text-center space-y-4">
-          <div className="mx-auto w-16 h-16 bg-gradient-to-br from-primary to-primary/60 rounded-full flex items-center justify-center shadow-lg shadow-primary/30">
-            <Shield className="w-8 h-8 text-primary-foreground" />
-          </div>
-          <div>
-            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
-              Neural Password Reset
-            </CardTitle>
-            <CardDescription className="text-muted-foreground">
-              Configure your new authentication sequence
-            </CardDescription>
-          </div>
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle>Reset Password</CardTitle>
+          <CardDescription>Enter and confirm your new password.</CardDescription>
         </CardHeader>
-        
-        <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="newPassword" className="text-sm font-medium text-foreground/80">
-                New Neural Key
-              </Label>
-              <div className="relative">
-                <Input
-                  id="newPassword"
-                  type={showNewPassword ? "text" : "password"}
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  className="pr-10 bg-background/50 border-primary/20 focus:border-primary/40 transition-colors"
-                  placeholder="Enter your new neural key"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowNewPassword(!showNewPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
+              <Label htmlFor="password">New password</Label>
+              <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
             </div>
-            
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword" className="text-sm font-medium text-foreground/80">
-                Confirm Neural Key
-              </Label>
-              <div className="relative">
-                <Input
-                  id="confirmPassword"
-                  type={showConfirmPassword ? "text" : "password"}
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="pr-10 bg-background/50 border-primary/20 focus:border-primary/40 transition-colors"
-                  placeholder="Confirm your new neural key"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
+              <Label htmlFor="confirm">Confirm password</Label>
+              <Input id="confirm" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
             </div>
-
-            <div className="text-xs text-muted-foreground bg-muted/30 p-3 rounded-lg">
-              <p>Neural security requirements:</p>
-              <ul className="mt-1 space-y-1 text-xs">
-                <li>• Minimum 8 characters</li>
-                <li>• Mix of letters, numbers, and symbols recommended</li>
-                <li>• Avoid common patterns</li>
-              </ul>
-            </div>
-          </CardContent>
-          
-          <CardFooter className="flex flex-col space-y-4">
-            <Button 
-              type="submit" 
-              className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/20 transition-all duration-300"
-              disabled={isLoading}
-            >
-              {isLoading ? "Updating Neural Pathways..." : "Update Authentication"}
+            <Button type="submit" disabled={loading} className="w-full">
+              {loading ? "Updating..." : "Update Password"}
             </Button>
-            
-            <div className="text-center">
-              <Link 
-                to="/login" 
-                className="text-sm text-primary hover:text-primary/80 transition-colors"
-              >
-                Return to Neural Network Access
-              </Link>
-            </div>
-          </CardFooter>
-        </form>
+          </form>
+        </CardContent>
       </Card>
     </div>
   );
 };
 
 export default ResetPassword;
+
+
+

@@ -8,7 +8,7 @@ const AnnouncementBanner = () => {
   if (!isVisible) return null;
 
   return (
-    <div className="bg-accent text-accent-foreground py-3 px-4 relative overflow-hidden">
+    <div className="bg-accent text-accent-foreground py-1.5 px-3.5 relative overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse" />
@@ -18,7 +18,7 @@ const AnnouncementBanner = () => {
         <div className="flex items-center space-x-3 flex-1">
           <Megaphone className="h-5 w-5 animate-pulse" />
           <p className="text-sm md:text-base font-medium">
-            🎉 <strong>Registration Open:</strong> Annual Tech Conference 2024 - Early bird pricing ends March 10th!
+          <strong>Registration Open:</strong> Annual Tech Conference 2024 - Early bird pricing ends March 10th!
           </p>
         </div>
         

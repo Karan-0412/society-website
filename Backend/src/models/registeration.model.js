@@ -25,7 +25,7 @@ const registerationSchema = new Schema({
     participants:{
         type: Number,
         required: true,
-        max:[3, "Maximum 4 members allowed"]
+        max:[4, "Maximum 5 members allowed"]
     },
     members: {
     type: [memberSchema],

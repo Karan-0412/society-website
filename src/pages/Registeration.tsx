@@ -19,7 +19,8 @@ const Registeration = () => {
     const [leaderUID,setLeaderUID] = useState("");
     const [participants, setParticipants] = useState(1);
     const [members, setMembers] = useState([]);
-    const navigate=useNavigate()
+    const navigate=useNavigate();
+
     useEffect(() => {
     setMembers(Array.from({ length: participants }, () => ({ name: "", uid: "" })));
     }, [participants]);
@@ -105,10 +106,10 @@ const Registeration = () => {
                             <option value="1">1</option>
                             <option value="2">2</option>
                             <option value="3">3</option>
-                            {/* <option value="4">4</option> */}
+                            <option value="4">4</option>
                         </select>
                     </div>
-
+                    
                     <div>
                         {Array.from({ length: participants }, (_, i) => (
                         <div className="container grid grid-cols-1 md:grid-cols-2 gap-4" key={i}>

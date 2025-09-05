@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -64,16 +65,21 @@ const EventsSection = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "Open":
+      case "upcoming":
         return "bg-success/10 text-success border-success/20";
-      case "Limited":
+      case "ongoing":
         return "bg-warning/10 text-warning border-warning/20";
-      case "Full":
+      case "completed":
+        return "bg-muted/10 text-muted-foreground border-muted/20";
+      case "cancelled":
         return "bg-destructive/10 text-destructive border-destructive/20";
       default:
         return "bg-muted/10 text-muted-foreground border-muted/20";
     }
   };
+
+  const topEvents = events.slice(0, 3);
+  const nextEvent = events.find(e => e.status === "upcoming" || e.status === "ongoing");
 
   return (
     <section className="py-20 bg-secondary/30">
@@ -89,11 +95,15 @@ const EventsSection = () => {
           
           {/* Countdown Timer for Next Event */}
           <div className="mt-8 flex justify-center">
-            <CountdownTimer 
-              targetDate="2025-02-15T18:00:00"
-              eventName="Annual Tech Conference 2024"
-              className="bg-card border rounded-lg p-4 shadow-sm"
-            />
+            {nextEvent ? (
+              <CountdownTimer 
+                targetDate={new Date(nextEvent.date + (nextEvent.time ? `T${nextEvent.time}` : "T00:00")).toISOString()}
+                eventName={nextEvent.title}
+                className="bg-card border rounded-lg p-4 shadow-sm"
+              />
+            ) : (
+              <div className="text-sm text-muted-foreground">No upcoming events scheduled.</div>
+            )}
           </div>
         </div>
 

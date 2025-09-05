@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
@@ -101,11 +102,13 @@ const Events = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "Open":
+      case "upcoming":
         return "bg-success/10 text-success border-success/20";
-      case "Limited":
+      case "ongoing":
         return "bg-warning/10 text-warning border-warning/20";
-      case "Full":
+      case "completed":
+        return "bg-muted/10 text-muted-foreground border-muted/20";
+      case "cancelled":
         return "bg-destructive/10 text-destructive border-destructive/20";
       default:
         return "bg-muted/10 text-muted-foreground border-muted/20";
@@ -138,6 +141,8 @@ const Events = () => {
                 <Input
                   placeholder="Search events..."
                   className="pl-10"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
                 />
               </div>
               <div className="flex gap-2">
@@ -176,28 +181,32 @@ const Events = () => {
                     <div className="space-y-2 text-sm">
                       <div className="flex items-center space-x-2 text-muted-foreground">
                         <Calendar className="h-4 w-4" />
-                        <span>{event.date}</span>
+                        <span>{new Date(event.date).toLocaleDateString()}</span>
                       </div>
-                      <div className="flex items-center space-x-2 text-muted-foreground">
-                        <Clock className="h-4 w-4" />
-                        <span>{event.time}</span>
-                      </div>
+                      {event.time && (
+                        <div className="flex items-center space-x-2 text-muted-foreground">
+                          <Clock className="h-4 w-4" />
+                          <span>{event.time}</span>
+                        </div>
+                      )}
                       <div className="flex items-center space-x-2 text-muted-foreground">
                         <MapPin className="h-4 w-4" />
                         <span>{event.location}</span>
                       </div>
-                      <div className="flex items-center space-x-2 text-muted-foreground">
-                        <Users className="h-4 w-4" />
-                        <span>{event.attendees} registered</span>
-                      </div>
+                      {typeof event.attendees === "number" && (
+                        <div className="flex items-center space-x-2 text-muted-foreground">
+                          <Users className="h-4 w-4" />
+                          <span>{event.attendees} registered</span>
+                        </div>
+                      )}
                     </div>
 
                     <Button onClick={()=>navigate(`/register/${event.title}`)}
                       className="w-full" 
-                      variant={event.status === "Full" ? "secondary" : "default"}
-                      disabled={event.status === "Full"}
+                      variant={event.status === "cancelled" ? "secondary" : "default"}
+                      disabled={event.status === "cancelled"}
                     >
-                      {event.status === "Full" ? "Event Full" : "Register Now"}
+                      {event.status === "cancelled" ? "Cancelled" : "Register Now"}
                     </Button>
                   </CardContent>
                 </Card>

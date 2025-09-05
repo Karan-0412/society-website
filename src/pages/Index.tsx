@@ -8,8 +8,10 @@ import AnnouncementBanner from "@/components/sections/AnnouncementBanner";
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
-      <AnnouncementBanner />
       <Header />
+      <div className = "left-0 right-0 h-16 bg-none"></div>
+      <AnnouncementBanner />
+      
       <main>
         <HeroSection />
         <AboutSection />

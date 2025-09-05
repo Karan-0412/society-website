@@ -42,12 +42,16 @@ const Header = () => {
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center space-x-4">
             <ThemeToggle />
-            <Button variant="outline" size="sm">
-              Sign In
-            </Button>
-            <Button size="sm" className="hero-gradient shadow-glow">
-              Join Us
-            </Button>
+            <Link to = "/login">
+              <Button variant="outline" size="sm">
+                Sign In
+              </Button>
+            </Link>
+            <Link to = "/join-us"> 
+              <Button size="sm" className="hero-gradient shadow-glow">
+                Join Us
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -81,12 +85,16 @@ const Header = () => {
                 );
               })}
               <div className="flex flex-col space-y-2 pt-3 border-t border-border">
-                <Button variant="outline" size="sm">
-                  Sign In
-                </Button>
-                <Button size="sm" className="hero-gradient shadow-glow">
-                  Join Us
-                </Button>
+                <Link to = "/login">
+                  <Button variant="outline" size="sm">
+                    Sign In
+                  </Button>
+                </Link>
+                <Link to = "/join-team"> 
+                  <Button size="sm" className="hero-gradient shadow-glow">
+                    Join Us
+                  </Button>
+                </Link>
               </div>
             </nav>
           </div>

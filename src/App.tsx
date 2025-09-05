@@ -9,20 +9,11 @@ import Events from "./pages/Events";
 import Gallery from "./pages/Gallery";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
-import Login from "./pages/Login" ;
-import Signup from "./pages/Signup" ;
-import SignIndex from "./pages/Signin/SignIndex" ;
-import TeamIndex from "./pages/TeamIndex" ;
-import JoinTeam from "./pages/JoinTeam";
-import PForgotPassword from "./pages/forgotPassword.tsx" ;
-import ResetPassword from "./pages/resetPassword" ;
-import CoreIndex  from "./pages/CoreIndex.tsx";
-import AttendanceEventsPage from "./pages/AttendanceEventsPage";
-import AttendanceMarkingPage from "./pages/AttendanceMarkingPage";
-import ProtectedRoute from "./components/ProtectedRoute";
 import About from "./pages/About";
 import FAQ from "./pages/FAQ";
 import Registeration from "./pages/Registeration";
+
+
 
 const queryClient = new QueryClient();
 
@@ -46,25 +37,6 @@ const App = () => (
             <Route path="/events" element={<Events />} />
             <Route path="/gallery" element={<Gallery />} />
             <Route path="/contact" element={<Contact />} />
-            <Route path="/team" element={<TeamIndex />} />
-            <Route path="/join-us" element={<JoinTeam />} />
-            <Route path="/forgot-password" element={<PForgotPassword />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/core-dashboard" element={
-              <ProtectedRoute>
-                <CoreIndex />
-              </ProtectedRoute>
-            } />
-            <Route path="/core-dashboard/attendance" element={
-              <ProtectedRoute>
-                <AttendanceEventsPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/core-dashboard/attendance/:eventId" element={
-              <ProtectedRoute>
-                <AttendanceMarkingPage />
-              </ProtectedRoute>
-            } />
             <Route path="/about" element={<About />} />
             <Route path="/faq" element={<FAQ />} />
             <Route path="/register/:slug" element={<Registeration />} />

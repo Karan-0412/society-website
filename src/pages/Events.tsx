@@ -12,23 +12,8 @@ import { useEffect, useState } from "react";
 
 
 
-interface EventItem {
-  id: string;
-  title: string;
-  description: string;
-  date: string;
-  time: string;
-  location: string;
-  attendees?: number;
-  category: string;
-  status: "upcoming" | "ongoing" | "completed" | "cancelled" | string;
-}
-
-const API_BASE = (import.meta as any).env?.VITE_CORE_API || "http://localhost:5050";
-
 const Events = () => {
   const [events, setEvents]=useState([]);
-  const [query, setQuery] = useState("");
 
 
   const getEvents = async ()=>{

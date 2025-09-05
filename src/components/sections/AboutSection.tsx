@@ -2,7 +2,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Target, Heart, Lightbulb, Users, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
+<<<<<<< HEAD
 import { motion } from "framer-motion";
+=======
+>>>>>>> 653181717e71f0b4bcf05f657c2ab88121ea1c14
 
 const AboutSection = () => {
   const values = [
@@ -90,7 +93,11 @@ const AboutSection = () => {
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-smooth" />
               </Button>
             </Link>
+<<<<<<< HEAD
           </motion.div>
+=======
+          </div>
+>>>>>>> 653181717e71f0b4bcf05f657c2ab88121ea1c14
 
           {/* Right Content - Values Grid */}
           <motion.div

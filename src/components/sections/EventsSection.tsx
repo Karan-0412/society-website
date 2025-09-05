@@ -8,20 +8,6 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-interface EventItem {
-  id: string;
-  title: string;
-  description: string;
-  date: string;
-  time: string;
-  location: string;
-  attendees?: number;
-  category: string;
-  status: "upcoming" | "ongoing" | "completed" | "cancelled" | string;
-}
-
-const API_BASE = (import.meta as any).env?.VITE_CORE_API || "http://localhost:5050";
-
 const EventsSection = () => {
 
   const navigate=useNavigate();

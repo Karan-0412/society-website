@@ -7,80 +7,97 @@ import { Calendar, Clock, MapPin, Users, Search, Filter } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useEffect, useState } from "react";
 
 
 
 const Events = () => {
+  const [events, setEvents]=useState([]);
+
+
+  const getEvents = async ()=>{
+    try {
+      const res = await axios.get("http://localhost:5000/events/");
+      // console.log(res);
+      setEvents(res.data)
+    } catch (error) {
+      console.log("Something went wrong when fetching the events.", error)
+    }
+  }
+
+  useEffect(()=>{
+    getEvents()
+  }, [])
 
   const navigate=useNavigate()
-  const events = [
-    {
-      id: 1,
-      title: "Annual Tech Conference 2024",
-      date: "March 15, 2024",
-      time: "9:00 AM - 5:00 PM",
-      location: "Main Auditorium",
-      attendees: 120,
-      category: "Conference",
-      status: "Open",
-      description: "Join us for a day of inspiring talks, networking, and innovation in technology. Featuring industry leaders and cutting-edge presentations."
-    },
-    {
-      id: 2,
-      title: "Community Hackathon",
-      date: "March 22, 2024",
-      time: "6:00 PM - 11:59 PM",
-      location: "Computer Lab B",
-      attendees: 48,
-      category: "Competition",
-      status: "Limited",
-      description: "24-hour coding challenge to solve real-world problems and win amazing prizes. Teams of 3-5 members welcome."
-    },
-    {
-      id: 3,
-      title: "Leadership Workshop",
-      date: "March 28, 2024",
-      time: "2:00 PM - 4:00 PM",
-      location: "Meeting Room 301",
-      attendees: 25,
-      category: "Workshop",
-      status: "Open",
-      description: "Develop essential leadership skills for personal and professional growth with interactive sessions."
-    },
-    {
-      id: 4,
-      title: "Networking Mixer",
-      date: "April 5, 2024",
-      time: "7:00 PM - 9:00 PM",
-      location: "Student Lounge",
-      attendees: 85,
-      category: "Social",
-      status: "Open",
-      description: "Connect with fellow students and alumni in a relaxed, friendly environment with refreshments."
-    },
-    {
-      id: 5,
-      title: "AI & Machine Learning Seminar",
-      date: "April 12, 2024",
-      time: "10:00 AM - 12:00 PM",
-      location: "Lecture Hall A",
-      attendees: 200,
-      category: "Seminar",
-      status: "Full",
-      description: "Deep dive into the latest trends in artificial intelligence and machine learning with expert speakers."
-    },
-    {
-      id: 6,
-      title: "Career Fair 2024",
-      date: "April 18, 2024",
-      time: "9:00 AM - 4:00 PM",
-      location: "Campus Gymnasium",
-      attendees: 300,
-      category: "Career",
-      status: "Open",
-      description: "Meet with top employers and explore career opportunities across various industries."
-    }
-  ];
+  // const events = [
+  //   {
+  //     id: 1,
+  //     title: "Annual Tech Conference 2024",
+  //     date: "March 15, 2024",
+  //     time: "9:00 AM - 5:00 PM",
+  //     location: "Main Auditorium",
+  //     attendees: 120,
+  //     category: "Conference",
+  //     status: "Open",
+  //     description: "Join us for a day of inspiring talks, networking, and innovation in technology. Featuring industry leaders and cutting-edge presentations."
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "Community Hackathon",
+  //     date: "March 22, 2024",
+  //     time: "6:00 PM - 11:59 PM",
+  //     location: "Computer Lab B",
+  //     attendees: 48,
+  //     category: "Competition",
+  //     status: "Limited",
+  //     description: "24-hour coding challenge to solve real-world problems and win amazing prizes. Teams of 3-5 members welcome."
+  //   },
+  //   {
+  //     id: 3,
+  //     title: "Leadership Workshop",
+  //     date: "March 28, 2024",
+  //     time: "2:00 PM - 4:00 PM",
+  //     location: "Meeting Room 301",
+  //     attendees: 25,
+  //     category: "Workshop",
+  //     status: "Open",
+  //     description: "Develop essential leadership skills for personal and professional growth with interactive sessions."
+  //   },
+  //   {
+  //     id: 4,
+  //     title: "Networking Mixer",
+  //     date: "April 5, 2024",
+  //     time: "7:00 PM - 9:00 PM",
+  //     location: "Student Lounge",
+  //     attendees: 85,
+  //     category: "Social",
+  //     status: "Open",
+  //     description: "Connect with fellow students and alumni in a relaxed, friendly environment with refreshments."
+  //   },
+  //   {
+  //     id: 5,
+  //     title: "AI & Machine Learning Seminar",
+  //     date: "April 12, 2024",
+  //     time: "10:00 AM - 12:00 PM",
+  //     location: "Lecture Hall A",
+  //     attendees: 200,
+  //     category: "Seminar",
+  //     status: "Full",
+  //     description: "Deep dive into the latest trends in artificial intelligence and machine learning with expert speakers."
+  //   },
+  //   {
+  //     id: 6,
+  //     title: "Career Fair 2024",
+  //     date: "April 18, 2024",
+  //     time: "9:00 AM - 4:00 PM",
+  //     location: "Campus Gymnasium",
+  //     attendees: 300,
+  //     category: "Career",
+  //     status: "Open",
+  //     description: "Meet with top employers and explore career opportunities across various industries."
+  //   }
+  // ];
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -141,7 +158,7 @@ const Events = () => {
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {events.map((event) => (
-                <Card key={event.id} className="group hover:shadow-lg transition-smooth border-border/50 hover:border-primary/20">
+                <Card key={event._id} className="group hover:shadow-lg transition-smooth border-border/50 hover:border-primary/20">
                   <CardHeader>
                     <div className="flex items-start justify-between">
                       <Badge className={`${getStatusColor(event.status)} font-medium`}>

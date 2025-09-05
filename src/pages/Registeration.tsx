@@ -26,7 +26,7 @@ const Registeration = () => {
     }, [participants]);
 
     const data = {
-        event: slug,
+        eventName: slug,
         teamName, 
         leaderName,
         leaderUID,
@@ -36,7 +36,7 @@ const Registeration = () => {
 
     const register = async() =>{
         try {
-            const res = await axios.post(`/register/${slug}/`, data)
+            const res = await axios.post(`http://localhost:5000/registerations/`, data)
             if(!res) {
                 console.log("ERROR while storing the registeration");
             }
@@ -48,10 +48,8 @@ const Registeration = () => {
               setParticipants(1);
               setMembers([]);
             }
-            
-
         } catch (error) {
-            console.log("ERROR While storing the registeration");
+            console.log("ERROR While making the registeration");
         }
     }
 
@@ -89,15 +87,15 @@ const Registeration = () => {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="teamName">Team Name</Label>
-                      <Input id="teamName" placeholder="" onChange={(e)=>setTeamName(e.currentTarget.value)} />
+                      <Input id="teamName" placeholder="Team Name" onChange={(e)=>setTeamName(e.currentTarget.value)} value={teamName} />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="leaderName">Team Leader Name</Label>
-                      <Input id="leaderName" placeholder="" onChange={(e)=>setLeaderName(e.currentTarget.value)} />
+                      <Input id="leaderName" placeholder="Team Leader Name" onChange={(e)=>setLeaderName(e.currentTarget.value)} value={leaderName} />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="lastName">Team Leader UID</Label>
-                      <Input id="leaderUID" placeholder="" onChange={(e)=>setLeaderUID(e.currentTarget.value)} />
+                      <Label htmlFor="leaderUID">Team Leader UID</Label>
+                      <Input id="leaderUID" placeholder="Team Leader UID" onChange={(e)=>setLeaderUID(e.currentTarget.value)} value={leaderUID} />
                     </div>
                     </div>
                     <div className="space-x-5 space-y-2">
@@ -115,11 +113,11 @@ const Registeration = () => {
                         <div className="container grid grid-cols-1 md:grid-cols-2 gap-4" key={i}>
                             <div className="space-y-2">
                                 <Label htmlFor={`member${i+1}Name`}>{`Member ${i+1} Name`}</Label>
-                                <Input type="text" id={`member${i+1}Name`} onChange={(e) => handleMemberChange(i, "name", e.target.value)}  />
+                                <Input type="text" id={`member${i+1}Name`} onChange={(e) => handleMemberChange(i, "name", e.target.value)} placeholder="Member Name"  />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor={`member${i+1}UID`}>{`Member ${i+1} UID`}</Label>
-                                <Input type="text" id={`member${i+1}UID`} onChange={(e) => handleMemberChange(i, "uid", e.target.value)}  />
+                                <Input type="text" id={`member${i+1}UID`} onChange={(e) => handleMemberChange(i, "uid", e.target.value)} placeholder="Member UID"  />
                             </div>
                         </div>
                         ))}

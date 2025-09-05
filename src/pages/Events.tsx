@@ -5,8 +5,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock, MapPin, Users, Search, Filter } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
+
 
 const Events = () => {
+
+  const navigate=useNavigate()
   const events = [
     {
       id: 1,
@@ -169,7 +175,7 @@ const Events = () => {
                       </div>
                     </div>
 
-                    <Button 
+                    <Button onClick={()=>navigate(`/register/${event.title}`)}
                       className="w-full" 
                       variant={event.status === "Full" ? "secondary" : "default"}
                       disabled={event.status === "Full"}

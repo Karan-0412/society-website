@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Target, Heart, Lightbulb, Users, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const AboutSection = () => {
   const values = [
@@ -58,11 +59,13 @@ const AboutSection = () => {
                 <div className="text-sm text-muted-foreground">Members</div>
               </div>
             </div>
-
-            <Button size="lg" className="group">
-              Learn More About Us
-              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-smooth" />
-            </Button>
+            
+            <Link to="/about" className="block mt-10 w-[100%] sm:flex sm:justify-center sm:items-center lg:block">
+              <Button size="lg" className="group">
+                Learn More About Us
+                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-smooth" />
+              </Button>
+            </Link>
           </div>
 
           {/* Right Content - Values Grid */}
@@ -93,5 +96,7 @@ const AboutSection = () => {
     </section>
   );
 };
+
+
 
 export default AboutSection;

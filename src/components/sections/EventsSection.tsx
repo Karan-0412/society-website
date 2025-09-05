@@ -4,47 +4,63 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock, MapPin, Users, ArrowRight } from "lucide-react";
 import CountdownTimer from "@/components/ui/countdown-timer";
 import { useNavigate } from "react-router-dom";
-
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const EventsSection = () => {
 
   const navigate=useNavigate();
+  const [upcomingEvents, setUpcomingEvents]=useState([]);
 
-  const upcomingEvents = [
-    {
-      id: 1,
-      title: "Annual Tech Conference 2024",
-      date: "March 15, 2024",
-      time: "9:00 AM - 5:00 PM",
-      location: "Main Auditorium",
-      attendees: 120,
-      category: "Conference",
-      status: "Open",
-      description: "Join us for a day of inspiring talks, networking, and innovation in technology."
-    },
-    {
-      id: 2,
-      title: "Community Hackathon",
-      date: "March 22, 2024",
-      time: "6:00 PM - 11:59 PM",
-      location: "Computer Lab B",
-      attendees: 48,
-      category: "Competition",
-      status: "Limited",
-      description: "24-hour coding challenge to solve real-world problems and win amazing prizes."
-    },
-    {
-      id: 3,
-      title: "Leadership Workshop",
-      date: "March 28, 2024",
-      time: "2:00 PM - 4:00 PM",
-      location: "Meeting Room 301",
-      attendees: 25,
-      category: "Workshop",
-      status: "Open",
-      description: "Develop essential leadership skills for personal and professional growth."
+    const getEvents = async ()=>{
+    try {
+      const res = await axios.get("http://localhost:5000/events/upcoming"); 
+      setUpcomingEvents(res.data)
+      // console.log(res);
+    } catch (error) {
+      console.log("Something went wrong when fetching the events.", error)
     }
-  ];
+  }
+
+  useEffect(()=>{
+    getEvents()
+  }, [])
+
+  // const upcomingEvents = [
+  //   {
+  //     id: 1,
+  //     title: "Annual Tech Conference 2024",
+  //     date: "March 15, 2024",
+  //     time: "9:00 AM - 5:00 PM",
+  //     location: "Main Auditorium",
+  //     attendees: 120,
+  //     category: "Conference",
+  //     status: "Open",
+  //     description: "Join us for a day of inspiring talks, networking, and innovation in technology."
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "Community Hackathon",
+  //     date: "March 22, 2024",
+  //     time: "6:00 PM - 11:59 PM",
+  //     location: "Computer Lab B",
+  //     attendees: 48,
+  //     category: "Competition",
+  //     status: "Limited",
+  //     description: "24-hour coding challenge to solve real-world problems and win amazing prizes."
+  //   },
+  //   {
+  //     id: 3,
+  //     title: "Leadership Workshop",
+  //     date: "March 28, 2024",
+  //     time: "2:00 PM - 4:00 PM",
+  //     location: "Meeting Room 301",
+  //     attendees: 25,
+  //     category: "Workshop",
+  //     status: "Open",
+  //     description: "Develop essential leadership skills for personal and professional growth."
+  //   }
+  // ];
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -83,8 +99,8 @@ const EventsSection = () => {
 
         {/* Events Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {upcomingEvents.map((evt) => (
-            <Card key={evt.id} className="group hover:shadow-lg transition-smooth border-border/50 hover:border-primary/20">
+          {upcomingEvents.slice(0, 3).map((evt) => (
+            <Card key={evt._id} className="group hover:shadow-lg transition-smooth border-border/50 hover:border-primary/20">
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <Badge className={`${getStatusColor(evt.status)} font-medium`}>
@@ -120,7 +136,7 @@ const EventsSection = () => {
 
                 <Button
                  onClick={()=> navigate(`/register/${evt.title}`)}
-                 className="w-full group" variant="outline">
+                 className="w-full group" variant="default">
                   Register Now
                   <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-smooth" />
                 </Button>

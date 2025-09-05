@@ -5,7 +5,7 @@ export const registerTeam = async (req, res) =>{
         const data=req.body;
         const newTeam = new Registeration(data);
         const registered=await newTeam.save();
-        res.status(400).json(registered);
+        res.status(201).json(registered);
     }catch(error){
         console.log(`ERROR while registering team: ${error}`);
         res.status(500).json({

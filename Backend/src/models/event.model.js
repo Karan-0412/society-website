@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
-const eventSchema= new Schema({
+const eventSchema = new Schema({
     title:{
         type: String,
         required: true
@@ -10,14 +10,14 @@ const eventSchema= new Schema({
         required: true
     },
     time:{
-        type:Date,
+        type: String,
         required:true 
     },
     location:{
         type: String,
         required: true
     },
-    attendance:{
+    attendees:{
         type: Number,
         required: true,
         default:0
@@ -40,6 +40,10 @@ const eventSchema= new Schema({
         required: true,
         max:[4, "Maximum 4 members allowed"]
         
+    },
+    featured:{
+        type: Boolean,
+        required: false
     }
 }, {timestamps: true})
 

@@ -10,11 +10,11 @@ export const app = express();
 // MIDDLEWARES
 
 app.use(express.json());
-app.use(cors());
+app.use(cors())
 
 
 //ROUTES
 
-app.use("/register/:slug", registerationRouter);
-app.use("/events",eventRouter);
+app.use("/registerations", registerationRouter);
+app.use("/events", eventRouter);
 app.use("/contact", messageRouter);

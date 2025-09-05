@@ -3,11 +3,11 @@ import { connectDB } from "./DB/connectDB.js";
 
 connectDB()
 .then(()=>{
-    app.on(error, (error)=>{
+    app.on("error", (error)=>{
         console.log(`ERROR1: ${error}`);
     })
-    app.listen(process.env.PORT, ()=>{
-    console.log(`The server is running on port ${process.env.PORT}`);
+    app.listen(5000 ,()=>{
+    console.log(`The server is running on port 5000`);
 })
 })
 .catch(()=>{

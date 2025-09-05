@@ -28,7 +28,7 @@ const Contact = () => {
 
   const sendMessage=async ()=>{
     try {
-      const res=await axios.post("/contact/", data);
+      const res=await axios.post("http://localhost:5000/contact/", data);
       if(!res){
         console.log("Error while submitting your response")
       }

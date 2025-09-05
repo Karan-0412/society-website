@@ -4,6 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock, MapPin, Users, ArrowRight } from "lucide-react";
 import CountdownTimer from "@/components/ui/countdown-timer";
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 interface EventItem {
   id: string;
@@ -20,28 +23,59 @@ interface EventItem {
 const API_BASE = (import.meta as any).env?.VITE_CORE_API || "http://localhost:5050";
 
 const EventsSection = () => {
-  const [events, setEvents] = useState<EventItem[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    let timer: number | undefined;
-    const fetchEvents = async () => {
-      try {
-        const res = await fetch(`${API_BASE}/api/events`);
-        const data = await res.json();
-        setEvents(data);
-      } catch (e) {
-        console.error("Failed to load events", e);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchEvents();
-    timer = window.setInterval(fetchEvents, 30000);
-    return () => {
-      if (timer) window.clearInterval(timer);
-    };
-  }, []);
+  const navigate=useNavigate();
+  const [upcomingEvents, setUpcomingEvents]=useState([]);
+
+    const getEvents = async ()=>{
+    try {
+      const res = await axios.get("http://localhost:5000/events/upcoming"); 
+      setUpcomingEvents(res.data)
+      // console.log(res);
+    } catch (error) {
+      console.log("Something went wrong when fetching the events.", error)
+    }
+  }
+
+  useEffect(()=>{
+    getEvents()
+  }, [])
+
+  // const upcomingEvents = [
+  //   {
+  //     id: 1,
+  //     title: "Annual Tech Conference 2024",
+  //     date: "March 15, 2024",
+  //     time: "9:00 AM - 5:00 PM",
+  //     location: "Main Auditorium",
+  //     attendees: 120,
+  //     category: "Conference",
+  //     status: "Open",
+  //     description: "Join us for a day of inspiring talks, networking, and innovation in technology."
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "Community Hackathon",
+  //     date: "March 22, 2024",
+  //     time: "6:00 PM - 11:59 PM",
+  //     location: "Computer Lab B",
+  //     attendees: 48,
+  //     category: "Competition",
+  //     status: "Limited",
+  //     description: "24-hour coding challenge to solve real-world problems and win amazing prizes."
+  //   },
+  //   {
+  //     id: 3,
+  //     title: "Leadership Workshop",
+  //     date: "March 28, 2024",
+  //     time: "2:00 PM - 4:00 PM",
+  //     location: "Meeting Room 301",
+  //     attendees: 25,
+  //     category: "Workshop",
+  //     status: "Open",
+  //     description: "Develop essential leadership skills for personal and professional growth."
+  //   }
+  // ];
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -89,56 +123,45 @@ const EventsSection = () => {
 
         {/* Events Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {loading && [1,2,3].map(i => (
-            <Card key={i} className="border-border/50">
-              <CardContent className="p-6 animate-pulse space-y-3">
-                <div className="h-5 w-2/3 bg-muted rounded" />
-                <div className="h-4 w-full bg-muted rounded" />
-                <div className="h-4 w-1/2 bg-muted rounded" />
-              </CardContent>
-            </Card>
-          ))}
-          {!loading && topEvents.map((event) => (
-            <Card key={event.id} className="group hover:shadow-lg transition-smooth border-border/50 hover:border-primary/20">
+          {upcomingEvents.slice(0, 3).map((evt) => (
+            <Card key={evt._id} className="group hover:shadow-lg transition-smooth border-border/50 hover:border-primary/20">
               <CardHeader>
                 <div className="flex items-start justify-between">
-                  <Badge className={`${getStatusColor(event.status)} font-medium`}>
-                    {event.status}
+                  <Badge className={`${getStatusColor(evt.status)} font-medium`}>
+                    {evt.status}
                   </Badge>
-                  <Badge variant="outline">{event.category}</Badge>
+                  <Badge variant="outline">{evt.category}</Badge>
                 </div>
                 <CardTitle className="group-hover:text-primary transition-smooth">
-                  {event.title}
+                  {evt.title}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-muted-foreground text-sm">{event.description}</p>
+                <p className="text-muted-foreground text-sm">{evt.description}</p>
                 
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center space-x-2 text-muted-foreground">
                     <Calendar className="h-4 w-4" />
-                    <span>{new Date(event.date).toLocaleDateString()}</span>
+                    <span>{evt.date}</span>
                   </div>
-                  {event.time && (
-                    <div className="flex items-center space-x-2 text-muted-foreground">
-                      <Clock className="h-4 w-4" />
-                      <span>{event.time}</span>
-                    </div>
-                  )}
+                  <div className="flex items-center space-x-2 text-muted-foreground">
+                    <Clock className="h-4 w-4" />
+                    <span>{evt.time}</span>
+                  </div>
                   <div className="flex items-center space-x-2 text-muted-foreground">
                     <MapPin className="h-4 w-4" />
-                    <span>{event.location}</span>
+                    <span>{evt.location}</span>
                   </div>
-                  {typeof event.attendees === "number" && (
-                    <div className="flex items-center space-x-2 text-muted-foreground">
-                      <Users className="h-4 w-4" />
-                      <span>{event.attendees} registered</span>
-                    </div>
-                  )}
+                  <div className="flex items-center space-x-2 text-muted-foreground">
+                    <Users className="h-4 w-4" />
+                    <span>{evt.attendees} registered</span>
+                  </div>
                 </div>
 
-                <Button className="w-full group" variant="outline">
-                  Learn More
+                <Button
+                 onClick={()=> navigate(`/register/${evt.title}`)}
+                 className="w-full group" variant="default">
+                  Register Now
                   <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-smooth" />
                 </Button>
               </CardContent>
@@ -148,11 +171,11 @@ const EventsSection = () => {
 
         {/* View All Button */}
         <div className="text-center">
-          <Button size="lg" variant="outline" className="group" asChild>
-            <a href="/events">
-              View All Events
-              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-smooth" />
-            </a>
+          <Button
+          onClick={()=>navigate("/events")}
+           size="lg" variant="outline" className="group">
+            View All Events
+            <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-smooth" />
           </Button>
         </div>
       </div>

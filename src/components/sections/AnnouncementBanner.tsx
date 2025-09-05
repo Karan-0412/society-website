@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { X, Megaphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import axios from "axios";
 
 const AnnouncementBanner = () => {
   const [isVisible, setIsVisible] = useState(true);
+
+  const evt = axios.get("/events/")
 
   if (!isVisible) return null;
 

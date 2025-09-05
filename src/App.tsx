@@ -20,6 +20,9 @@ import CoreIndex  from "./pages/CoreIndex.tsx";
 import AttendanceEventsPage from "./pages/AttendanceEventsPage";
 import AttendanceMarkingPage from "./pages/AttendanceMarkingPage";
 import ProtectedRoute from "./components/ProtectedRoute";
+import About from "./pages/About";
+import FAQ from "./pages/FAQ";
+import Registeration from "./pages/Registeration";
 
 const queryClient = new QueryClient();
 
@@ -62,6 +65,9 @@ const App = () => (
                 <AttendanceMarkingPage />
               </ProtectedRoute>
             } />
+            <Route path="/about" element={<About />} />
+            <Route path="/faq" element={<FAQ />} />
+            <Route path="/register/:slug" element={<Registeration />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
 
             <Route path="*" element={<NotFound />} />

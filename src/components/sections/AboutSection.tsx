@@ -2,10 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Target, Heart, Lightbulb, Users, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
-<<<<<<< HEAD
 import { motion } from "framer-motion";
-=======
->>>>>>> 653181717e71f0b4bcf05f657c2ab88121ea1c14
 
 const AboutSection = () => {
   const values = [

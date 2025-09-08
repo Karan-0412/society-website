@@ -26,5 +26,5 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src", "backend/templates/resetPassword.tsx"]
+  "include": ["src", "Backend_karan/templates/resetPassword.tsx"]
 }

@@ -5,7 +5,6 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock, MapPin, Users, ArrowRight } from "lucide-react";
 import CountdownTimer from "@/components/ui/countdown-timer";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
 import axios from "axios";
 
 const EventsSection = () => {

@@ -45,8 +45,8 @@ const Registeration = () => {
               setTeamName("");
               setLeaderName("");
               setLeaderUID("");
-              setParticipants(1);
-              setMembers([]);
+              // setParticipants(1);
+              setMembers([{name: "", uid: ""}]);
             }
         } catch (error) {
             console.log("ERROR While making the registeration");
@@ -100,7 +100,7 @@ const Registeration = () => {
                     </div>
                     <div className="space-x-5 space-y-2">
                     <Label htmlFor="participants">Number of Members: </Label>
-                        <select id="participants" name="participants" className="px-4 py-2 rounded-lg" onChange={(e)=> setParticipants(Number(e.currentTarget.value))}>
+                        <select id="participants" name="participants" className="px-4 py-2 rounded-lg" value={participants} onChange={(e)=> setParticipants(Number(e.currentTarget.value))}>
                             <option value="1">1</option>
                             <option value="2">2</option>
                             <option value="3">3</option>
@@ -113,11 +113,11 @@ const Registeration = () => {
                         <div className="container grid grid-cols-1 md:grid-cols-2 gap-4" key={i}>
                             <div className="space-y-2">
                                 <Label htmlFor={`member${i+1}Name`}>{`Member ${i+1} Name`}</Label>
-                                <Input type="text" id={`member${i+1}Name`} onChange={(e) => handleMemberChange(i, "name", e.target.value)} placeholder="Member Name"  />
+                                <Input type="text" id={`member${i+1}Name`} value={members[i]?.name || ""} onChange={(e) => handleMemberChange(i, "name", e.target.value)} placeholder="Member Name"  />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor={`member${i+1}UID`}>{`Member ${i+1} UID`}</Label>
-                                <Input type="text" id={`member${i+1}UID`} onChange={(e) => handleMemberChange(i, "uid", e.target.value)} placeholder="Member UID"  />
+                                <Input type="text" id={`member${i+1}UID`} value={members[i]?.uid || ""} onChange={(e) => handleMemberChange(i, "uid", e.target.value)} placeholder="Member UID"  />
                             </div>
                         </div>
                         ))}
